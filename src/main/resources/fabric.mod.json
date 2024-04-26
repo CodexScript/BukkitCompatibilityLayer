@@ -6,7 +6,7 @@
   "description": "",
   "authors": [],
   "contact": {
-    "repo": "https://github.com/Aidan/BukkitCompatibilityLayer"
+    "repo": "https://github.com/CodexScript/BukkitCompatibilityLayer"
   },
   "license": "All-Rights-Reserved",
   "icon": "assets/bukkitcompatibilitylayer/icon.png",
@@ -14,6 +14,9 @@
   "entrypoints": {
     "main": [
       "github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer"
+    ],
+    "client": [
+      "github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayerClient"
     ]
   },
   "mixins": [

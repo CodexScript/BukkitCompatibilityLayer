@@ -23,29 +23,31 @@ public class EndPortalBlockMixin {
     @Inject(at = @At("HEAD"), method = "onEntityCollision", cancellable = true)
     private void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo info) {
         if (world.getGameRules().getBoolean(BukkitCompatibilityLayer.DISABLE_END)) { // If our game rule is set to true
-            if (entity.isPlayer()) {
-                PlayerEntity player = (PlayerEntity) entity;
-                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-                ServerPlayerEntityAccessor accessor = (ServerPlayerEntityAccessor) serverPlayer;
-                if (accessor.getInTeleportationState()) { // If the player is in the teleportation state (e.g. we are teleporting them)
-                    info.cancel(); // Cancel the event
-                    return;
-                }
-                MutableText message = Text.empty();
-                message.setStyle(message.getStyle().withColor(TextColor.parse("red")));
-                message.append(Text.of("The End is disabled in this world! You have been teleported to your spawn point."));
-
-                BlockPos respawnPosition = accessor.getSpawnPointPosition();
-                RegistryKey<World> respawnDimension = ((ServerPlayerEntityAccessor) serverPlayer).getSpawnPointDimension();
-                ServerWorld respawnWorld = serverPlayer.getServer().getWorld(respawnDimension);
-                if (respawnPosition != null && respawnDimension != null) { // If the player has a spawn point set
-                    serverPlayer.teleport(respawnWorld, respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ(), 0, 0);
-                } else { // If the player does not have a spawn point set
-                    BlockPos worldSpawnPos = respawnWorld.getSpawnPos();
-                    serverPlayer.teleport(respawnWorld, worldSpawnPos.getX(), worldSpawnPos.getY(), worldSpawnPos.getZ(), 0, 0);
-                }
-                player.sendMessage(message, false);
+            if (!entity.isPlayer()) {
+                return;
             }
+
+            PlayerEntity player = (PlayerEntity) entity;
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            ServerPlayerEntityAccessor accessor = (ServerPlayerEntityAccessor) serverPlayer;
+            if (accessor.getInTeleportationState()) { // If the player is in the teleportation state (e.g. we are teleporting them)
+                info.cancel(); // Cancel the event
+                return;
+            }
+            MutableText message = Text.empty();
+            message.setStyle(message.getStyle().withColor(TextColor.parse("red")));
+            message.append(Text.of("The End is disabled in this world! You have been teleported to your spawn point."));
+
+            BlockPos respawnPosition = accessor.getSpawnPointPosition();
+            RegistryKey<World> respawnDimension = ((ServerPlayerEntityAccessor) serverPlayer).getSpawnPointDimension();
+            ServerWorld respawnWorld = serverPlayer.getServer().getWorld(respawnDimension);
+            if (respawnPosition != null && respawnDimension != null) { // If the player has a spawn point set
+                serverPlayer.teleport(respawnWorld, respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ(), 0, 0);
+            } else { // If the player does not have a spawn point set
+                BlockPos worldSpawnPos = respawnWorld.getSpawnPos();
+                serverPlayer.teleport(respawnWorld, worldSpawnPos.getX(), worldSpawnPos.getY(), worldSpawnPos.getZ(), 0, 0);
+            }
+            player.sendMessage(message, false);
             info.cancel(); // Cancel the vanilla event
         }
     }
