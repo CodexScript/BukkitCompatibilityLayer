@@ -1,5 +1,6 @@
 package github.codexscript.bukkitcompatibilitylayer.mixin;
 
+import com.mojang.serialization.DataResult;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -17,8 +18,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Optional;
+
 @Mixin(net.minecraft.block.EndPortalBlock.class)
-public class EndPortalBlockMixin {
+public abstract class EndPortalBlockMixin {
     // On Entity Collision (End Portal)
     @Inject(at = @At("HEAD"), method = "onEntityCollision", cancellable = true)
     private void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo info) {
@@ -35,7 +38,9 @@ public class EndPortalBlockMixin {
                 return;
             }
             MutableText message = Text.empty();
-            message.setStyle(message.getStyle().withColor(TextColor.parse("red")));
+            Optional<TextColor> color = TextColor.parse("red").result();
+            assert color.isPresent();
+            message.setStyle(message.getStyle().withColor(color.get()));
             message.append(Text.of("The End is disabled in this world! You have been teleported to your spawn point."));
 
             BlockPos respawnPosition = accessor.getSpawnPointPosition();
@@ -44,6 +49,7 @@ public class EndPortalBlockMixin {
             if (respawnPosition != null && respawnDimension != null) { // If the player has a spawn point set
                 serverPlayer.teleport(respawnWorld, respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ(), 0, 0);
             } else { // If the player does not have a spawn point set
+                assert respawnWorld != null;
                 BlockPos worldSpawnPos = respawnWorld.getSpawnPos();
                 serverPlayer.teleport(respawnWorld, worldSpawnPos.getX(), worldSpawnPos.getY(), worldSpawnPos.getZ(), 0, 0);
             }

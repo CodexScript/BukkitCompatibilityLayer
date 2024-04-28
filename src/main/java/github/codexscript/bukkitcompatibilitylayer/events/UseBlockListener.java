@@ -12,6 +12,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.World;
 
+import java.util.Optional;
+
 public class UseBlockListener {
     private static final Block END_PORTAL_FRAME = Block.getBlockFromItem(net.minecraft.item.Items.END_PORTAL_FRAME);
 
@@ -23,7 +25,9 @@ public class UseBlockListener {
         Block block = world.getBlockState(hitResult.getBlockPos()).getBlock();
         if (block.equals(END_PORTAL_FRAME) && player.getStackInHand(hand).isOf(Items.ENDER_EYE)) {
             MutableText message = Text.empty();
-            message.setStyle(message.getStyle().withColor(TextColor.parse("red")));
+            Optional<TextColor> color = TextColor.parse("red").result();
+            assert color.isPresent();
+            message.setStyle(message.getStyle().withColor(color.get()));
             message.append(Text.of("End portal frames are disabled in this world!"));
             player.sendMessage(message, false);
             player.swingHand(hand);

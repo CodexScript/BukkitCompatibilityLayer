@@ -19,9 +19,19 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class GhostKickCommand {
+
+    private static void commenceKick(CommandContext<ServerCommandSource> source, ServerPlayerEntity player) {
+        BukkitCompatibilityLayer.LOGGER.info("Commencing ghost kick");
+        PlayerManager pm = source.getSource().getServer().getPlayerManager();
+        // pm.remove(player);
+        BukkitCompatibilityLayer.playersGhosting.add(player.getUuid());
+        Runnable r = new GhostKickThread(player);
+        new Thread(r).start();
+    }
 
     public static HttpClient client = HttpClient.newHttpClient();
 
@@ -44,20 +54,20 @@ public class GhostKickCommand {
         if (source.getSource().getPlayer() == null) {
             source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName().getString() + " was ghost kicked by " + source.getSource().getName() + "." ), true);
         } else {
-            String sourcePlayerName = source.getSource().getPlayer().getDisplayName().getString();
+            String sourcePlayerName = Objects.requireNonNull(source.getSource().getPlayer().getDisplayName()).getString();
             source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName().getString() + " was ghost kicked by " + sourcePlayerName + "." ), true);
         }
 
-        BukkitCompatibilityLayer.LOGGER.info("Ghost kicking " + player.getDisplayName().getString());
+        BukkitCompatibilityLayer.LOGGER.info("Ghost kicking {}", Objects.requireNonNull(player.getDisplayName()).getString());
 
         String id = ((IEntityDataSaver) player).getPersistentData().getString("discordUID");
         if (id == null || id.isEmpty()) {
-            source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Discord UID for " + player.getDisplayName().getString() + " is not set. Ghost kick will not continue."), false);
-            BukkitCompatibilityLayer.LOGGER.info("Discord UID not set for " + player.getDisplayName().getString() + ". Returning.");
-            return 0;
+            source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Discord UID for " + player.getDisplayName().getString() + " is not set."), false);
+            BukkitCompatibilityLayer.LOGGER.info("Discord UID not set for {}.", player.getDisplayName().getString());
+            commenceKick(source, player);
+        } else {
+            makeRequest(GhostKickCommand::processResponse, player, source);
         }
-
-        makeRequest(GhostKickCommand::processResponse, player, source);
 
         return 1;
     }
@@ -72,7 +82,7 @@ public class GhostKickCommand {
             responseFuture.thenAccept(response -> callback.accept(response, player, source))
                     .exceptionally(e -> {
                         source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Request to Discord bot endpoint failed. Ghost kick will not continue."), false);
-                        BukkitCompatibilityLayer.LOGGER.error("Error during Discord bot request: " + e.getMessage());
+                        BukkitCompatibilityLayer.LOGGER.error("Error during Discord bot request: {}", e.getMessage());
                         return null;
                     });
 
@@ -83,15 +93,10 @@ public class GhostKickCommand {
 
     private static void processResponse(HttpResponse<String> response, ServerPlayerEntity player, CommandContext<ServerCommandSource> source) {
         if (response.statusCode() == 200) {
-            BukkitCompatibilityLayer.LOGGER.info("Commencing ghost kick");
-            PlayerManager pm = source.getSource().getServer().getPlayerManager();
-            // pm.remove(player);
-            BukkitCompatibilityLayer.playersGhosting.add(player.getUuid());
-            Runnable r = new GhostKickThread(player);
-            new Thread(r).start();
+            commenceKick(source, player);
         } else {
             source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Request to Discord bot endpoint failed. Ghost kick will not continue."), false);
-            BukkitCompatibilityLayer.LOGGER.error("Received status code " + response.statusCode() + " from Discord bot API.");
+            BukkitCompatibilityLayer.LOGGER.error("Received status code {} from Discord bot API.", response.statusCode());
         }
     }
 }
