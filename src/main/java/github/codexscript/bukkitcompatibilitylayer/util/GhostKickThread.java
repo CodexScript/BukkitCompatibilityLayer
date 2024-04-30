@@ -1,6 +1,7 @@
 package github.codexscript.bukkitcompatibilitylayer.util;
 
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
+import github.codexscript.bukkitcompatibilitylayer.mixin.ServerPlayNetworkHandlerMixin;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -22,6 +23,7 @@ public class GhostKickThread implements Runnable {
             // MC-248335
             if (!player.isDisconnected()) {
                 player.networkHandler.disconnect(Text.of("Internal Exception: java.IOException: An established connection was aborted by the software in your host machine"));
+                BukkitCompatibilityLayer.playersGhosting.put(player.getUuid(), false);
             }
             TimeUnit.SECONDS.sleep(10);
             BukkitCompatibilityLayer.playersGhosting.remove(player.getUuid());

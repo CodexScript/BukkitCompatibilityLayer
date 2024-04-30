@@ -16,6 +16,7 @@ import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +32,7 @@ public class BukkitCompatibilityLayer implements ModInitializer {
 
     public static final GameRules.Key<GameRules.BooleanRule> DISABLE_END = GameRuleRegistry.register("disableEnd", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(false));
 
-    public static Set<UUID> playersGhosting = ConcurrentHashMap.newKeySet();
+    public static HashMap<Object, Boolean> playersGhosting = new HashMap<>();
     public static Set<UUID> playersModInstalled = ConcurrentHashMap.newKeySet();
 
     public static final ScheduledExecutorService exectuor = java.util.concurrent.Executors.newScheduledThreadPool(1);

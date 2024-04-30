@@ -26,9 +26,11 @@ public class GhostKickCommand {
 
     private static void commenceKick(CommandContext<ServerCommandSource> source, ServerPlayerEntity player) {
         BukkitCompatibilityLayer.LOGGER.info("Commencing ghost kick");
-        PlayerManager pm = source.getSource().getServer().getPlayerManager();
+        // PlayerManager pm = source.getSource().getServer().getPlayerManager();
         // pm.remove(player);
-        BukkitCompatibilityLayer.playersGhosting.add(player.getUuid());
+        BukkitCompatibilityLayer.playersGhosting.put(player.getUuid(), false);
+
+
         Runnable r = new GhostKickThread(player);
         new Thread(r).start();
     }

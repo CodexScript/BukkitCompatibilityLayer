@@ -6,6 +6,9 @@
   "mixins": [
     "EndPortalBlockMixin",
     "EntityDataSaverMixin",
+    "InventoryS2CPacketMixin",
+    "PlayerManagerMixin",
+    "ServerCommonNetworkHandlerAccessor",
     "ServerCommonNetworkHandlerInvoker",
     "ServerCommonNetworkHandlerMixin",
     "ServerPlayerEntityAccessor",
