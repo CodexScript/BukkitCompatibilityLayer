@@ -1,12 +1,10 @@
 package github.codexscript.bukkitcompatibilitylayer.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
-import github.codexscript.bukkitcompatibilitylayer.util.DiscordUIDData;
-import github.codexscript.bukkitcompatibilitylayer.util.IEntityDataSaver;
+import github.codexscript.bukkitcompatibilitylayer.StateSaverAndLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -24,7 +22,8 @@ public class GetDiscordUIDCommand {
 
     private static int execute(CommandContext<ServerCommandSource> source) throws CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(source, "player");
-        String id = ((IEntityDataSaver) player).getPersistentData().getString("discordUID");
+        // String id = ((IEntityDataSaver) player).getPersistentData().getString("discordUID");
+        String id = StateSaverAndLoader.getPlayerState(player).discordUID;
         if (id.isEmpty()) {
             source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Discord UID of " + player.getName().getString() + " has no set value."), false);
         } else {

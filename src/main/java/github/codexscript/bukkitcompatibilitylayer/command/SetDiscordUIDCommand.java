@@ -5,8 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
-import github.codexscript.bukkitcompatibilitylayer.util.DiscordUIDData;
-import github.codexscript.bukkitcompatibilitylayer.util.IEntityDataSaver;
+import github.codexscript.bukkitcompatibilitylayer.StateSaverAndLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -28,7 +27,8 @@ public class SetDiscordUIDCommand {
     private static int execute(CommandContext<ServerCommandSource> source) throws CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(source, "player");
         String newID = StringArgumentType.getString(source, "id");
-        DiscordUIDData.setUID((IEntityDataSaver) player, newID);
+        // DiscordUIDData.setUID((IEntityDataSaver) player, newID);
+        StateSaverAndLoader.getPlayerState(player).discordUID = newID;
         source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Set Discord UID of " + player.getName().getString() + " to " + newID), false);
         return 1;
     }

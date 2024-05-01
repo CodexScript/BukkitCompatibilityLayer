@@ -4,12 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
+import github.codexscript.bukkitcompatibilitylayer.StateSaverAndLoader;
 import github.codexscript.bukkitcompatibilitylayer.util.GhostKickThread;
-import github.codexscript.bukkitcompatibilitylayer.util.IEntityDataSaver;
 import github.codexscript.bukkitcompatibilitylayer.util.ResponseHandler;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -62,7 +61,8 @@ public class GhostKickCommand {
 
         BukkitCompatibilityLayer.LOGGER.info("Ghost kicking {}", Objects.requireNonNull(player.getDisplayName()).getString());
 
-        String id = ((IEntityDataSaver) player).getPersistentData().getString("discordUID");
+        //String id = ((IEntityDataSaver) player).getPersistentData().getString("discordUID");
+        String id = StateSaverAndLoader.getPlayerState(player).discordUID;
         if (id == null || id.isEmpty()) {
             source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Discord UID for " + player.getDisplayName().getString() + " is not set."), false);
             BukkitCompatibilityLayer.LOGGER.info("Discord UID not set for {}.", player.getDisplayName().getString());
@@ -76,7 +76,8 @@ public class GhostKickCommand {
 
     private static void makeRequest(ResponseHandler<HttpResponse<String>, ServerPlayerEntity, CommandContext<ServerCommandSource>> callback, ServerPlayerEntity player, CommandContext<ServerCommandSource> source) {
         try {
-            String id = ((IEntityDataSaver) player).getPersistentData().getString("discordUID");
+            // String id = ((IEntityDataSaver) player).getPersistentData().getString("discordUID");
+            String id = StateSaverAndLoader.getPlayerState(player).discordUID;
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://192.168.1.50:3000/kick/" + id)).build();
             CompletableFuture<HttpResponse<String>> responseFuture =
                     client.sendAsync(request, HttpResponse.BodyHandlers.ofString());

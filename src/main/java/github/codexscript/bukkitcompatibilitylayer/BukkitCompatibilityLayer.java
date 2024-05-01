@@ -4,10 +4,8 @@ import github.codexscript.bukkitcompatibilitylayer.command.*;
 import github.codexscript.bukkitcompatibilitylayer.events.PlayerJoinListener;
 import github.codexscript.bukkitcompatibilitylayer.events.UseBlockListener;
 import github.codexscript.bukkitcompatibilitylayer.networking.NetworkingMessages;
-import github.codexscript.bukkitcompatibilitylayer.util.PlayerCopyHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
@@ -38,7 +36,6 @@ public class BukkitCompatibilityLayer implements ModInitializer {
     public static final ScheduledExecutorService exectuor = java.util.concurrent.Executors.newScheduledThreadPool(1);
     @Override
     public void onInitialize() {
-        ServerPlayerEvents.COPY_FROM.register(new PlayerCopyHandler());
         UseBlockCallback.EVENT.register(UseBlockListener::onUseBlock);
 
         NetworkingMessages.registerC2SPackets();
