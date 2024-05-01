@@ -2,6 +2,7 @@ package github.codexscript.bukkitcompatibilitylayer;
 
 import github.codexscript.bukkitcompatibilitylayer.command.*;
 import github.codexscript.bukkitcompatibilitylayer.events.PlayerJoinListener;
+import github.codexscript.bukkitcompatibilitylayer.events.PlayerLeaveListener;
 import github.codexscript.bukkitcompatibilitylayer.events.UseBlockListener;
 import github.codexscript.bukkitcompatibilitylayer.networking.NetworkingMessages;
 import net.fabricmc.api.ModInitializer;
@@ -40,6 +41,7 @@ public class BukkitCompatibilityLayer implements ModInitializer {
 
         NetworkingMessages.registerC2SPackets();
         ServerPlayConnectionEvents.JOIN.register(PlayerJoinListener::onPlayerJoin);
+        ServerPlayConnectionEvents.DISCONNECT.register(PlayerLeaveListener::onPlayerLeave);
 
         // Command registration
         CommandRegistrationCallback.EVENT.register(ScareCommand::register);
