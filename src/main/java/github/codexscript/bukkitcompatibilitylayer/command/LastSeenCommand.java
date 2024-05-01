@@ -1,5 +1,6 @@
 package github.codexscript.bukkitcompatibilitylayer.command;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -7,33 +8,37 @@ import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
 import github.codexscript.bukkitcompatibilitylayer.StateSaverAndLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 
 public class LastSeenCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("lastseen")
                 .requires(source -> source.hasPermissionLevel(1))
-                .then(CommandManager.argument("player", EntityArgumentType.player())
+                .then(CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .executes(LastSeenCommand::execute)));
     }
 
     private static int execute(CommandContext<ServerCommandSource> source) throws CommandSyntaxException {
-        ServerPlayerEntity player = EntityArgumentType.getPlayer(source, "player");
-        long lastSeenEpoch = StateSaverAndLoader.getPlayerState(player).lastSeen;
-        if (lastSeenEpoch == 0) {
-            source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName().getString() + " has never been seen before."), false);
+        Collection<GameProfile> players = GameProfileArgumentType.getProfileArgument(source, "player");
+        GameProfile player = players.iterator().next();
+
+        ServerPlayerEntity playerEntity = source.getSource().getServer().getPlayerManager().getPlayer(player.getId());
+
+        long lastSeenEpoch = StateSaverAndLoader.getPlayerState(player.getId(), source.getSource().getServer()).lastSeen;
+        if (playerEntity != null && !playerEntity.isDisconnected()) {
+            source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName() + " is on the server now."), false);
             return 1;
-        } else if (!player.isDisconnected()) {
-            source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName().getString() + " is on the server now."), false);
+        } else if (lastSeenEpoch == 0) {
+            source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName() + " has never been seen before."), false);
             return 1;
         }
 
@@ -41,7 +46,7 @@ public class LastSeenCommand {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd yyyy h:mm a")
                 .withZone(ZoneId.systemDefault());
         String formatted = formatter.format(instant);
-        source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName().getString() + " was last seen: " + formatted), false);
+        source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName() + " was last seen: " + formatted), false);
         return 1;
 
     }

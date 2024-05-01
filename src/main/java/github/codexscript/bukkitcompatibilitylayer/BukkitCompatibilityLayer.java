@@ -51,5 +51,6 @@ public class BukkitCompatibilityLayer implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(GetDiscordUIDCommand::register);
         CommandRegistrationCallback.EVENT.register(SetDiscordUIDCommand::register);
         CommandRegistrationCallback.EVENT.register(PinCPUCommand::register);
+        CommandRegistrationCallback.EVENT.register(LastSeenCommand::register);
     }
 }

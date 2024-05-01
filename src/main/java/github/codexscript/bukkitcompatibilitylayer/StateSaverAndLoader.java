@@ -87,4 +87,10 @@ public class StateSaverAndLoader extends PersistentState {
 
         return playerState;
     }
+
+    public static PlayerData getPlayerState(UUID uuid, MinecraftServer server) {
+        StateSaverAndLoader serverState = getServerState(server);
+        PlayerData playerState = serverState.players.computeIfAbsent(uuid, inlineUuid -> new PlayerData());
+        return playerState;
+    }
 }
