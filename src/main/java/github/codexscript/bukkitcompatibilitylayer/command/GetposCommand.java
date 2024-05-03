@@ -5,6 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Dynamic;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
@@ -50,7 +51,7 @@ public class GetposCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("getpos")
-                .requires(source -> source.hasPermissionLevel(1))
+                .requires(Permissions.require("bukkitcompatibilitylayer.command.getpos", 4))
                 .then(CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .executes(GetposCommand::execute)));
     }

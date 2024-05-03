@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,12 @@ public class BukkitCompatibilityLayer implements ModInitializer {
     public static Set<UUID> playersModInstalled = ConcurrentHashMap.newKeySet();
 
     public static final ScheduledExecutorService exectuor = java.util.concurrent.Executors.newScheduledThreadPool(1);
+
+    // public static boolean hasLuckPerms = false;
+
     @Override
     public void onInitialize() {
+        // hasLuckPerms = FabricLoader.getInstance().isModLoaded("luckperms");
         UseBlockCallback.EVENT.register(UseBlockListener::onUseBlock);
 
         NetworkingMessages.registerC2SPackets();

@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
 import github.codexscript.bukkitcompatibilitylayer.StateSaverAndLoader;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
@@ -22,7 +23,7 @@ import java.util.Collection;
 public class LastSeenCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("lastseen")
-                .requires(source -> source.hasPermissionLevel(1))
+                .requires(Permissions.require("bukkitcompatibilitylayer.command.lastseen", 4))
                 .then(CommandManager.argument("player", GameProfileArgumentType.gameProfile())
                         .executes(LastSeenCommand::execute)));
     }

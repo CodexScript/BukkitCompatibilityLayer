@@ -3,6 +3,7 @@ package github.codexscript.bukkitcompatibilitylayer.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -14,7 +15,7 @@ import net.minecraft.text.Text;
 public class ModListCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("mods")
-                .requires(source -> source.hasPermissionLevel(4))
+                .requires(Permissions.require("bukkitcompatibilitylayer.command.modlist", 4))
                 .executes(ModListCommand::execute));
     }
 

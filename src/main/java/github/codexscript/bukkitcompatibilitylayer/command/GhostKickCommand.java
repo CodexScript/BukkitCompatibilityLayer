@@ -7,6 +7,7 @@ import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
 import github.codexscript.bukkitcompatibilitylayer.StateSaverAndLoader;
 import github.codexscript.bukkitcompatibilitylayer.util.GhostKickThread;
 import github.codexscript.bukkitcompatibilitylayer.util.ResponseHandler;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -38,7 +39,7 @@ public class GhostKickCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("ghostkick")
-                .requires(source -> source.hasPermissionLevel(1))
+                .requires(Permissions.require("bukkitcompatibilitylayer.command.ghostkick", 4))
                 .then(CommandManager.argument("player", EntityArgumentType.player())
                         .executes(GhostKickCommand::execute)));
     }

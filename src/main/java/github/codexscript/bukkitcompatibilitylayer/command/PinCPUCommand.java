@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
 import github.codexscript.bukkitcompatibilitylayer.networking.NetworkingMessages;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.CommandRegistryAccess;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class PinCPUCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("pincpu")
-                .requires(source -> source.hasPermissionLevel(4))
+                .requires(Permissions.require("bukkitcompatibilitylayer.command.pincpu", 4))
                 .then(CommandManager.argument("player", EntityArgumentType.player())
                         .executes(PinCPUCommand::execute)
                         .then(CommandManager.argument("seconds", IntegerArgumentType.integer(5, 60))
