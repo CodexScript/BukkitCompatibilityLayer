@@ -42,11 +42,13 @@ public class LastSeenCommand {
             return 1;
         }
 
+        ZoneId zoneId = ZoneId.systemDefault();
         Instant instant = Instant.ofEpochSecond(lastSeenEpoch);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd yyyy h:mm a")
-                .withZone(ZoneId.systemDefault());
+                .withZone(zoneId);
         String formatted = formatter.format(instant);
-        source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName() + " was last seen: " + formatted), false);
+        String timeZone = zoneId.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.US);
+        source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName() + " was last seen: " + formatted + " " + timeZone), false);
         return 1;
 
     }
