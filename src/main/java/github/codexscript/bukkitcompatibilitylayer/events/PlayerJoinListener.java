@@ -11,7 +11,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class PlayerJoinListener {
 
     public static void onPlayerJoin(ServerPlayNetworkHandler serverPlayNetworkHandler, PacketSender packetSender, MinecraftServer minecraftServer) {
-        ServerPlayerEntity player = serverPlayNetworkHandler.player;
-        ServerPlayNetworking.send(player, NetworkingMessages.INSTALLED_HANDSHAKE_S2C_ID, PacketByteBufs.empty());
+        if (!minecraftServer.isSingleplayer()) {
+            ServerPlayerEntity player = serverPlayNetworkHandler.player;
+            ServerPlayNetworking.send(player, NetworkingMessages.INSTALLED_HANDSHAKE_S2C_ID, PacketByteBufs.empty());
+        }
     }
 }
