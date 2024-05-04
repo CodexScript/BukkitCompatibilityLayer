@@ -87,6 +87,11 @@ public class GetposCommand {
             dimension = getDimension(requestedPlayer.getWorld());
         }
 
+        if (playerPos == null) {
+            source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Player not found."), false);
+            return 0;
+        }
+
         ServerPlayerEntity finalRequestedPlayer = requestedPlayer;
         source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + finalRequestedPlayer.getName().getString() + " is at x: " + playerPos.getX() + " y: " + playerPos.getY() + " z: " + playerPos.getZ() + " in dimension " + dimension), false);
         return 1;
