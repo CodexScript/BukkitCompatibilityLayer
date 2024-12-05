@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
 import github.codexscript.bukkitcompatibilitylayer.networking.NetworkingMessages;
+import github.codexscript.bukkitcompatibilitylayer.networking.payloads.PinCPUPayload;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -45,9 +46,6 @@ public class PinCPUCommand {
     }
 
     private static int sendPinPacket(CommandContext<ServerCommandSource> source, ServerPlayerEntity player, int seconds, int threadCount) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeInt(seconds);
-        buf.writeInt(threadCount);
 
         MinecraftServer server = player.getServer();
 
@@ -60,7 +58,7 @@ public class PinCPUCommand {
             source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName().getString() + " does not have the mod installed."), false);
             return 0;
         }
-        ServerPlayNetworking.send(player, NetworkingMessages.PIN_CPU_ID, buf);
+        ServerPlayNetworking.send(player, new PinCPUPayload(seconds, threadCount));
         source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + player.getName().getString() + " CPU pinned for " + seconds + " seconds"), false);
         return 1;
     }

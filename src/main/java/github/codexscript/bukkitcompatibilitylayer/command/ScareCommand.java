@@ -25,7 +25,7 @@ public class ScareCommand {
     private static int execute(CommandContext<ServerCommandSource> source) throws CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(source, "player");
         source.getSource().sendFeedback(() -> Text.literal(BukkitCompatibilityLayer.CHAT_PREFIX + "Scared " + player.getName().getString() + "!"), false);
-        player.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, SoundCategory.HOSTILE, 1.0F, 1.0F);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_CREEPER_PRIMED, SoundCategory.HOSTILE, 1.0F, 1.0F);
         return 1;
     }
 }

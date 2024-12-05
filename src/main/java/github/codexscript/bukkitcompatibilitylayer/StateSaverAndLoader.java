@@ -2,6 +2,7 @@ package github.codexscript.bukkitcompatibilitylayer;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
@@ -17,7 +18,7 @@ public class StateSaverAndLoader extends PersistentState {
     public long lastSeen = 0;
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         nbt.putString("discordUID", discordUID);
         nbt.putLong("lastSeen", lastSeen);
 
@@ -35,7 +36,7 @@ public class StateSaverAndLoader extends PersistentState {
         return nbt;
     }
 
-    public static StateSaverAndLoader createFromNbt(NbtCompound tag) {
+    public static StateSaverAndLoader createFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registries) {
         StateSaverAndLoader state = new StateSaverAndLoader();
         state.discordUID = tag.getString("discordUID");
         state.lastSeen = tag.getLong("lastSeen");

@@ -1,7 +1,6 @@
 package github.codexscript.bukkitcompatibilitylayer;
 
 import github.codexscript.bukkitcompatibilitylayer.command.*;
-import github.codexscript.bukkitcompatibilitylayer.events.PlayerJoinListener;
 import github.codexscript.bukkitcompatibilitylayer.events.PlayerLeaveListener;
 import github.codexscript.bukkitcompatibilitylayer.events.UseBlockListener;
 import github.codexscript.bukkitcompatibilitylayer.networking.NetworkingMessages;
@@ -11,7 +10,6 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +42,7 @@ public class BukkitCompatibilityLayer implements ModInitializer {
         // hasLuckPerms = FabricLoader.getInstance().isModLoaded("luckperms");
         UseBlockCallback.EVENT.register(UseBlockListener::onUseBlock);
 
-        NetworkingMessages.registerC2SPackets();
-        ServerPlayConnectionEvents.JOIN.register(PlayerJoinListener::onPlayerJoin);
+        NetworkingMessages.registerServersidePackets();
         ServerPlayConnectionEvents.DISCONNECT.register(PlayerLeaveListener::onPlayerLeave);
 
         // Command registration

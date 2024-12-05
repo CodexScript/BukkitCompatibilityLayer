@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
@@ -25,7 +26,13 @@ public abstract class EndPortalBlockMixin {
     // On Entity Collision (End Portal)
     @Inject(at = @At("HEAD"), method = "onEntityCollision", cancellable = true)
     private void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo info) {
-        if (world.getGameRules().getBoolean(BukkitCompatibilityLayer.DISABLE_END)) { // If our game rule is set to true
+        MinecraftServer server = world.getServer();
+
+        if (server == null) {
+            return;
+        }
+
+        if (server.getGameRules().getBoolean(BukkitCompatibilityLayer.DISABLE_END)) { // If our game rule is set to true
             if (!entity.isPlayer()) {
                 return;
             }
@@ -47,11 +54,11 @@ public abstract class EndPortalBlockMixin {
             RegistryKey<World> respawnDimension = ((ServerPlayerEntityAccessor) serverPlayer).getSpawnPointDimension();
             ServerWorld respawnWorld = serverPlayer.getServer().getWorld(respawnDimension);
             if (respawnPosition != null && respawnDimension != null) { // If the player has a spawn point set
-                serverPlayer.teleport(respawnWorld, respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ(), 0, 0);
+                serverPlayer.teleport(respawnWorld, respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ(), null, 0, 0);
             } else { // If the player does not have a spawn point set
                 assert respawnWorld != null;
                 BlockPos worldSpawnPos = respawnWorld.getSpawnPos();
-                serverPlayer.teleport(respawnWorld, worldSpawnPos.getX(), worldSpawnPos.getY(), worldSpawnPos.getZ(), 0, 0);
+                serverPlayer.teleport(respawnWorld, worldSpawnPos.getX(), worldSpawnPos.getY(), worldSpawnPos.getZ(), null, 0, 0);
             }
             player.sendMessage(message, false);
             info.cancel(); // Cancel the vanilla event

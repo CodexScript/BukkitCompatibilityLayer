@@ -23,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
+import java.util.Optional;
+
 public class GetposCommand {
 
     private static String getDimension(World world) {
@@ -66,10 +68,10 @@ public class GetposCommand {
 
         if (requestedPlayer == null) {
             requestedPlayer = minecraftServer.getPlayerManager().createPlayer(requestedProfile, SyncedClientOptions.createDefault());
-            NbtCompound compound = minecraftServer.getPlayerManager().loadPlayerData(requestedPlayer);
-            if (compound != null) {
+            Optional<NbtCompound> compound = minecraftServer.getPlayerManager().loadPlayerData(requestedPlayer);
+            if (compound.isPresent()) {
                 ServerWorld world = minecraftServer.getWorld(
-                        DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, compound.get("Dimension")))
+                        DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, compound.get()))
                                 .result().get());
                 if (world != null) {
                     dimension = getDimension(world);
