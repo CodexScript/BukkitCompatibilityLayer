@@ -5,7 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
 import github.codexscript.bukkitcompatibilitylayer.StateSaverAndLoader;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -16,7 +15,7 @@ import net.minecraft.text.Text;
 public class GetDiscordUIDCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("getdiscord")
-                .requires(Permissions.require("bukkitcompatibilitylayer.command.getdiscord", 4))
+                .requires(source -> source.hasPermissionLevel(4))
                 .then(CommandManager.argument("player", EntityArgumentType.player())
                         .executes(GetDiscordUIDCommand::execute)));
     }

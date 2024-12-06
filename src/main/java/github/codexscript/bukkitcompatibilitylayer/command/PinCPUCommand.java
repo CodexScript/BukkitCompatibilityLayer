@@ -5,26 +5,20 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import github.codexscript.bukkitcompatibilitylayer.BukkitCompatibilityLayer;
-import github.codexscript.bukkitcompatibilitylayer.networking.NetworkingMessages;
 import github.codexscript.bukkitcompatibilitylayer.networking.payloads.PinCPUPayload;
-import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-import java.util.concurrent.TimeUnit;
-
 public class PinCPUCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
         dispatcher.register(CommandManager.literal("pincpu")
-                .requires(Permissions.require("bukkitcompatibilitylayer.command.pincpu", 4))
+                .requires(source -> source.hasPermissionLevel(4))
                 .then(CommandManager.argument("player", EntityArgumentType.player())
                         .executes(PinCPUCommand::execute)
                         .then(CommandManager.argument("seconds", IntegerArgumentType.integer(5, 60))
