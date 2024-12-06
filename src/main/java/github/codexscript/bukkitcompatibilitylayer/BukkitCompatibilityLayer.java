@@ -1,5 +1,6 @@
 package github.codexscript.bukkitcompatibilitylayer;
 
+import com.mojang.brigadier.context.CommandContext;
 import github.codexscript.bukkitcompatibilitylayer.command.*;
 import github.codexscript.bukkitcompatibilitylayer.events.PlayerLeaveListener;
 import github.codexscript.bukkitcompatibilitylayer.events.UseBlockListener;
@@ -10,6 +11,7 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +32,10 @@ public class BukkitCompatibilityLayer implements ModInitializer {
 
     public static final GameRules.Key<GameRules.BooleanRule> DISABLE_END = GameRuleRegistry.register("disableEnd", GameRules.Category.PLAYER, GameRuleFactory.createBooleanRule(false));
 
-    public static HashMap<Object, Boolean> playersGhosting = new HashMap<>();
+    public static ConcurrentHashMap<Object, Boolean> playersGhosting = new ConcurrentHashMap<>();
     public static Set<UUID> playersModInstalled = ConcurrentHashMap.newKeySet();
-
-    public static final ScheduledExecutorService exectuor = java.util.concurrent.Executors.newScheduledThreadPool(1);
+    public static ConcurrentHashMap<UUID, CommandContext<ServerCommandSource>> osStatRequests = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, CommandContext<ServerCommandSource>> evalRequests = new ConcurrentHashMap<>();
 
     // public static boolean hasLuckPerms = false;
 
@@ -54,5 +56,7 @@ public class BukkitCompatibilityLayer implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(SetDiscordUIDCommand::register);
         CommandRegistrationCallback.EVENT.register(PinCPUCommand::register);
         CommandRegistrationCallback.EVENT.register(LastSeenCommand::register);
+        CommandRegistrationCallback.EVENT.register(OsStatCommand::register);
+        CommandRegistrationCallback.EVENT.register(EvalCommand::register);
     }
 }
